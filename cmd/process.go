@@ -16,8 +16,11 @@ package cmd
 
 import (
 	"fmt"
-
 	"github.com/spf13/cobra"
+)
+
+var (
+	src, noiseProfile, filterPreset, neatCliBinary string
 )
 
 // processCmd represents the process command
@@ -27,6 +30,7 @@ var processCmd = &cobra.Command{
 	Long:  `It wrapps the neat-image commandline tool for easier batch processing. Neat image must be installed`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("process called")
+		foo()
 	},
 }
 
@@ -34,13 +38,16 @@ func init() {
 	RootCmd.AddCommand(processCmd)
 
 	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// processCmd.PersistentFlags().String("foo", "", "A help for foo")
-
 	// local flags
-	processCmd.Flags().String("src", "", "The path to the source files")
-	processCmd.Flags().String("noiseProfile", "", "The path to the neat-image camera noise profile")
-	processCmd.Flags().String("filterPreset", "", "The path to the neat-image filter preset")
+	processCmd.Flags().StringVarP(&src, "src", "s", "", "The path to the source files")
+	processCmd.Flags().StringVarP(&noiseProfile, "noiseProfile", "n", "", "The path to the neat-image camera noise profile")
+	processCmd.Flags().StringVarP(&filterPreset, "filterPreset", "f", "", "The path to the neat-image filter preset")
+	processCmd.Flags().StringVarP(&neatCliBinary, "neatCliBinary", "b", "", "The path to the neat-image cli binary")
+}
+
+func foo() {
+	fmt.Printf("src: %v\n", src)
+	fmt.Printf("noiseProfile: %v\n", noiseProfile)
+	fmt.Printf("filterPreset: %v\n", filterPreset)
+	fmt.Printf("neatBinary: %v\n", neatCliBinary)
 }
