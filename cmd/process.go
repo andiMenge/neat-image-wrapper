@@ -17,11 +17,28 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"regexp"
 )
 
 var (
-	src, noiseProfile, filterPreset, neatCliBinary string
+	src string
 )
+
+type neatConfig struct {
+	binary       string
+	noiseProfile string
+	filterPreset string
+	args         string
+}
+
+var neatImage = neatConfig{}
+
+const JpgRegEx = "(?i)\\.(jpg|jpeg)" //(?i)=case insensitive
+
+var jpgs = make([]string, 0) //initialize array
 
 // processCmd represents the process command
 var processCmd = &cobra.Command{
@@ -30,6 +47,11 @@ var processCmd = &cobra.Command{
 	Long:  `It wrapps the neat-image commandline tool for easier batch processing. Neat image must be installed`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("process called")
+		err := walkSrcDir()
+		if err != nil {
+			fmt.Errorf("Error: %s ", err)
+			os.Exit(1)
+		}
 		debug()
 	},
 }
@@ -40,14 +62,61 @@ func init() {
 	// Here you will define your flags and configuration settings.
 	// local flags
 	processCmd.Flags().StringVarP(&src, "src", "s", "", "The path to the source files")
-	processCmd.Flags().StringVarP(&noiseProfile, "noiseProfile", "n", "", "The path to the neat-image camera noise profile")
-	processCmd.Flags().StringVarP(&filterPreset, "filterPreset", "f", "", "The path to the neat-image filter preset")
-	processCmd.Flags().StringVarP(&neatCliBinary, "neatCliBinary", "b", "", "The path to the neat-image cli binary")
+	processCmd.Flags().StringVarP(&neatImage.noiseProfile, "noiseProfile", "n", "", "The path to the neat-image camera noise profile")
+	processCmd.Flags().StringVarP(&neatImage.filterPreset, "filterPreset", "f", "", "The path to the neat-image filter preset")
+	processCmd.Flags().StringVarP(&neatImage.binary, "neatCliBinary", "b", "", "The path to the neat-image cli binary")
 }
 
 func debug() {
 	fmt.Printf("src: %v\n", src)
-	fmt.Printf("noiseProfile: %v\n", noiseProfile)
-	fmt.Printf("filterPreset: %v\n", filterPreset)
-	fmt.Printf("neatBinary: %v\n", neatCliBinary)
+	fmt.Printf("noiseProfile: %v\n", neatImage.noiseProfile)
+	fmt.Printf("filterPreset: %v\n", neatImage.filterPreset)
+	fmt.Printf("neatBinary: %v\n", neatImage.binary)
+	for _, i := range jpgs {
+		fmt.Printf("%v\n", i)
+	}
+}
+
+func walkSrcDir() error {
+	err := filepath.Walk(src, findJpgs) // parses dir recursive and execs findJpgs for every element in dir
+	if err != nil {
+		return fmt.Errorf("Error walking directory: %s ", err)
+	}
+	return nil
+}
+
+// check if a path contains a jpeg signature
+func isJpg(path string) bool {
+	r, err := regexp.Compile(JpgRegEx)
+	if err != nil {
+		fmt.Errorf("Error compiling RegEx: %s ", err)
+	}
+
+	if r.MatchString(path) {
+		return true
+	} else {
+		return false
+	}
+}
+
+func findJpgs(path string, f os.FileInfo, err error) error {
+	if err != nil {
+		return fmt.Errorf("foo: %s ", err)
+	}
+
+	if isJpg(path) {
+		jpgs = append(jpgs, path)
+	}
+	return nil
+}
+
+func processJpgs(jpgs []string) error {
+	for _, jpg := range jpgs {
+		out, err := exec.Command(neatImage.binary, jpg, neatImage.noiseProfile, neatImage.filterPreset).Output()
+		if err != nil {
+			return fmt.Errorf("error while processing file %s: %s ", jpg, err)
+		}
+		fmt.Printf("%s\n", out)
+	}
+	return nil
 }
