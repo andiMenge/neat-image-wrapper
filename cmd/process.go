@@ -34,11 +34,12 @@ type neatConfig struct {
 	args         string
 }
 
-var neatImage = neatConfig{}
+var (
+	neatImage = neatConfig{}
+	jpgs      = make([]string, 0) //initialize array
+)
 
 const JpgRegEx = "(?i)\\.(jpg|jpeg)" //(?i)=case insensitive
-
-var jpgs = make([]string, 0) //initialize array
 
 // processCmd represents the process command
 var processCmd = &cobra.Command{
