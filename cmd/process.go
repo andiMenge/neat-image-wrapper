@@ -30,7 +30,7 @@ var processCmd = &cobra.Command{
 	Long:  `It wrapps the neat-image commandline tool for easier batch processing. Neat image must be installed`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("process called")
-		foo()
+		debug()
 	},
 }
 
@@ -45,7 +45,7 @@ func init() {
 	processCmd.Flags().StringVarP(&neatCliBinary, "neatCliBinary", "b", "", "The path to the neat-image cli binary")
 }
 
-func foo() {
+func debug() {
 	fmt.Printf("src: %v\n", src)
 	fmt.Printf("noiseProfile: %v\n", noiseProfile)
 	fmt.Printf("filterPreset: %v\n", filterPreset)
