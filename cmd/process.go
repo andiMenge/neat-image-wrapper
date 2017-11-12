@@ -41,7 +41,7 @@ var (
 
 const JpgRegEx = "(?i)\\.(jpg|jpeg)" //(?i)=case insensitive
 
-// processCmd represents the process command
+// processCmd represents the process command. Main logic is in here
 var processCmd = &cobra.Command{
 	Use:   "process",
 	Short: "A small wrapper for the neat-image windows command line tool",
@@ -59,7 +59,6 @@ var processCmd = &cobra.Command{
 
 func init() {
 	RootCmd.AddCommand(processCmd)
-
 	// Here you will define your flags and configuration settings.
 	// local flags
 	processCmd.Flags().StringVarP(&src, "src", "s", "", "The path to the source files")
