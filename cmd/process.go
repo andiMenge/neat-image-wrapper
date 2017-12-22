@@ -23,10 +23,6 @@ import (
 	"regexp"
 )
 
-var (
-	src string
-)
-
 type neatConfig struct {
 	binary       string
 	noiseProfile string
@@ -37,6 +33,7 @@ type neatConfig struct {
 var (
 	neatImage = neatConfig{}
 	jpgs      = make([]string, 0) //initialize array
+	src       string
 )
 
 const JpgRegEx = "(?i)\\.(jpg|jpeg)" //(?i)=case insensitive
@@ -53,6 +50,11 @@ var processCmd = &cobra.Command{
 			fmt.Errorf("Error: %s ", err)
 			os.Exit(1)
 		}
+		err = processJpgs(jpgs)
+		if err != nil {
+			fmt.Printf("Error: %s ", err)
+			os.Exit(1)
+		}
 		debug()
 	},
 }
@@ -65,6 +67,8 @@ func init() {
 	processCmd.Flags().StringVarP(&neatImage.noiseProfile, "noiseProfile", "n", "", "The path to the neat-image camera noise profile")
 	processCmd.Flags().StringVarP(&neatImage.filterPreset, "filterPreset", "f", "", "The path to the neat-image filter preset")
 	processCmd.Flags().StringVarP(&neatImage.binary, "neatCliBinary", "b", "", "The path to the neat-image cli binary")
+	processCmd.Flags().StringVarP(&neatImage.args, "output args", "o", "-oi", "NeatImage output arguments")
+
 }
 
 func debug() {
@@ -112,7 +116,7 @@ func findJpgs(path string, f os.FileInfo, err error) error {
 
 func processJpgs(jpgs []string) error {
 	for _, jpg := range jpgs {
-		out, err := exec.Command(neatImage.binary, jpg, neatImage.noiseProfile, neatImage.filterPreset).Output()
+		out, err := exec.Command(neatImage.binary, jpg, neatImage.noiseProfile, neatImage.filterPreset, neatImage.args).Output()
 		if err != nil {
 			return fmt.Errorf("error while processing file %s: %s ", jpg, err)
 		}

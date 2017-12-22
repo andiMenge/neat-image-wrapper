@@ -32,7 +32,7 @@ var RootCmd = &cobra.Command{
 	Long:  `It wrapps the neat-image commandline tool for easier batch processing. Neat image must be installed`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
-	//	Run: func(cmd *cobra.Command, args []string) { },
+	//  Run: func(cmd *cobra.Command, args []string) { },
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
