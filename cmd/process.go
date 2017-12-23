@@ -61,11 +61,7 @@ var processCmd = &cobra.Command{
 		}
 
 		//call neat image on the found JPEG images
-		err = processJpgs(jpgs)
-		if err != nil {
-			fmt.Printf("Error: %s ", err)
-			//os.Exit(1)
-		}
+		processJpgs(jpgs)
 
 		// print debug stats
 		//debug()
@@ -129,7 +125,7 @@ func findJpgs(path string, f os.FileInfo, err error) error {
 	return nil
 }
 
-func processJpgs(jpgs []string) error {
+func processJpgs(jpgs []string) {
 	// set error counter to zero
 	processError.count = 0
 
@@ -140,11 +136,9 @@ func processJpgs(jpgs []string) error {
 			processError.count++
 			processError.files = append(processError.files, jpg)
 			fmt.Printf("%s\n", out)
-			return fmt.Errorf("error while processing file %s: %s ", jpg, err)
 		}
 		fmt.Printf("%s\n", out)
 	}
-	return nil
 }
 
 func printStats() {
