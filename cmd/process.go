@@ -30,10 +30,16 @@ type neatConfig struct {
 	args         string
 }
 
+type neatError struct {
+	files []string
+	count int
+}
+
 var (
-	neatImage = neatConfig{}
-	jpgs      = make([]string, 0) //initialize array
-	src       string
+	neatImage    = neatConfig{}
+	processError = neatError{}
+	jpgs         = make([]string, 0) //initialize array
+	src          string
 )
 
 const JpgRegEx = "(?i)\\.(jpg|jpeg)" //(?i)=case insensitive
@@ -44,18 +50,27 @@ var processCmd = &cobra.Command{
 	Short: "A small wrapper for the neat-image windows command line tool",
 	Long:  `It wrapps the neat-image commandline tool for easier batch processing. Neat image must be installed`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("process called")
+		// Welcome message
+		fmt.Println("## NEAT-IMAGE-WRAPPER ##")
+
+		// walk the src dir and look for JPEG images
 		err := walkSrcDir()
 		if err != nil {
 			fmt.Errorf("Error: %s ", err)
 			os.Exit(1)
 		}
+
+		//call neat image on the found JPEG images
 		err = processJpgs(jpgs)
 		if err != nil {
 			fmt.Printf("Error: %s ", err)
-			os.Exit(1)
+			//os.Exit(1)
 		}
-		debug()
+
+		// print debug stats
+		//debug()
+		printStats()
+		os.Exit(0)
 	},
 }
 
@@ -115,12 +130,23 @@ func findJpgs(path string, f os.FileInfo, err error) error {
 }
 
 func processJpgs(jpgs []string) error {
+	// set error counter to zero
+	processError.count = 0
+
+	// loop over jpgs and call neat on them
 	for _, jpg := range jpgs {
 		out, err := exec.Command(neatImage.binary, jpg, neatImage.noiseProfile, neatImage.filterPreset, neatImage.args).Output()
 		if err != nil {
+			processError.count++
+			processError.files = append(processError.files, jpg)
+			fmt.Printf("%s\n", out)
 			return fmt.Errorf("error while processing file %s: %s ", jpg, err)
 		}
 		fmt.Printf("%s\n", out)
 	}
 	return nil
+}
+
+func printStats() {
+	fmt.Printf("\n\n## PROCESS STATS ##\nErrorCount: %v\nErrorFiles: %v\n", processError.count, processError.files)
 }
