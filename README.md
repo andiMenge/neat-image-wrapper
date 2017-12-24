@@ -1,4 +1,7 @@
-> About text goes here
+> A small wrapper for the neat image command line tool.
+
+# Usage
+`neatbatch process -h`
 
 # Local Testing
 ```
