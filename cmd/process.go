@@ -51,7 +51,7 @@ var processCmd = &cobra.Command{
 	Long:  `It wrapps the neat-image commandline tool for easier batch processing. Neat image must be installed`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// Welcome message
-		fmt.Println("## NEAT-IMAGE-WRAPPER ##")
+		fmt.Println("## NEATBATCH ##")
 
 		// walk the src dir and look for JPEG images
 		err := walkSrcDir()
@@ -142,5 +142,5 @@ func processJpgs(jpgs []string) {
 }
 
 func printStats() {
-	fmt.Printf("\n\n## PROCESS STATS ##\nErrorCount: %v\nErrorFiles: %v\n", processError.count, processError.files)
+	fmt.Printf("\n\n## PROCESS STATS ##\nFilesWithErrors: %v\nErrorFiles: %v\nJpgsInSrcPath: %v\n", processError.count, processError.files, len(jpgs))
 }
