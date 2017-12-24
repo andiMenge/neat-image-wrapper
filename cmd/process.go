@@ -48,7 +48,7 @@ const JpgRegEx = "(?i)\\.(jpg|jpeg)" //(?i)=case insensitive
 var processCmd = &cobra.Command{
 	Use:   "process",
 	Short: "A small wrapper for the neat-image windows command line tool",
-	Long:  `It wrapps the neat-image commandline tool for easier batch processing. Neat image must be installed`,
+	Long:  `It wrapps the neat-image commandline tool for easier batch processing. Neat image must be installed.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// Welcome message
 		fmt.Println("## NEATBATCH ##")
