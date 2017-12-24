@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/andiMenge/neatbatch.svg?branch=master)](https://travis-ci.org/andiMenge/neatbatch)
+
 > A small wrapper for the neat image command line tool.
 
 # Usage
