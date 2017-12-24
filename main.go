@@ -14,7 +14,7 @@
 
 package main
 
-import "github.com/andimenge/neat-image-wrapper/cmd"
+import "github.com/andimenge/neatbatch/cmd"
 
 func main() {
 	cmd.Execute()

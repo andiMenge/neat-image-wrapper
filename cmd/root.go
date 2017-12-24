@@ -27,7 +27,7 @@ var cfgFile string
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
-	Use:   "neat-image-wrapper",
+	Use:   "neatbatch",
 	Short: "A small wrapper for the neat-image windows command line tool",
 	Long:  `It wrapps the neat-image commandline tool for easier batch processing. Neat image must be installed`,
 	// Uncomment the following line if your bare application
@@ -50,7 +50,7 @@ func init() {
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
-	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.neat-image-wrapper.yaml)")
+	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.neatbatch.yaml)")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
@@ -70,9 +70,9 @@ func initConfig() {
 			os.Exit(1)
 		}
 
-		// Search config in home directory with name ".neat-image-wrapper" (without extension).
+		// Search config in home directory with name ".neatbatch" (without extension).
 		viper.AddConfigPath(home)
-		viper.SetConfigName(".neat-image-wrapper")
+		viper.SetConfigName(".neatbatch")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match
