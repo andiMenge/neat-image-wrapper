@@ -14,7 +14,7 @@
 
 package main
 
-import "github.com/andimenge/neatbatch/cmd"
+import "github.com/andiMenge/neatbatch/cmd"
 
 func main() {
 	cmd.Execute()
