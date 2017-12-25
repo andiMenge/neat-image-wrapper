@@ -36,13 +36,17 @@ type neatError struct {
 }
 
 var (
-	neatImage    = neatConfig{}
-	processError = neatError{}
-	jpgs         = make([]string, 0) //initialize array
-	src          string
+	neatImage         = neatConfig{}
+	processError      = neatError{}
+	jpgs              = make([]string, 0) //initialize array
+	ignoredFilesCount = 0
+	src               string
 )
 
-const JpgRegEx = "(?i)\\.(jpg|jpeg)" //(?i)=case insensitive
+const (
+	JpgRegEx    = "(?i)\\.(jpg|jpeg)" //(?i)=case insensitive
+	ignoreRegEx = "(_filtered)"
+)
 
 // processCmd represents the process command. Main logic is in here
 var processCmd = &cobra.Command{
@@ -51,7 +55,7 @@ var processCmd = &cobra.Command{
 	Long:  `It wrapps the neat-image commandline tool for easier batch processing. Neat image must be installed.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// Welcome message
-		fmt.Println("## NEATBATCH ##")
+		fmt.Printf("\n## NEATBATCH ##\nFile names that include '_filtered' will be ignored!\n")
 
 		// walk the src dir and look for JPEG images
 		err := walkSrcDir()
@@ -102,12 +106,30 @@ func walkSrcDir() error {
 
 // check if a path contains a jpeg signature
 func isJpg(path string) bool {
+	// compile jpg regex
 	r, err := regexp.Compile(JpgRegEx)
 	if err != nil {
 		fmt.Errorf("Error compiling RegEx: %s ", err)
+		panic(err)
 	}
 
 	if r.MatchString(path) {
+		return true
+	} else {
+		return false
+	}
+}
+
+func isIgnored(path string) bool {
+	// compile ignore-file regex
+	r, err := regexp.Compile(ignoreRegEx)
+	if err != nil {
+		fmt.Errorf("Error compiling RegEx: %s ", err)
+		panic(err)
+	}
+	// check if the file should be ignored or not
+	if r.MatchString(path) {
+		ignoredFilesCount++
 		return true
 	} else {
 		return false
@@ -119,7 +141,7 @@ func findJpgs(path string, f os.FileInfo, err error) error {
 		return fmt.Errorf("foo: %s ", err)
 	}
 
-	if isJpg(path) {
+	if isJpg(path) && isIgnored(path) == false {
 		jpgs = append(jpgs, path)
 	}
 	return nil
@@ -142,5 +164,5 @@ func processJpgs(jpgs []string) {
 }
 
 func printStats() {
-	fmt.Printf("\n\n## PROCESS STATS ##\nFilesWithErrors: %v\nErrorFiles: %v\nJpgsInSrcPath: %v\n", processError.count, processError.files, len(jpgs))
+	fmt.Printf("\n\n## PROCESS STATS ##\nFilesWithErrors: %v\nIgnoredFiles: %v\nJpgsInSrcPath: %v\nErrorFiles: %v\n", processError.count, ignoredFilesCount, len(jpgs), processError.files)
 }
